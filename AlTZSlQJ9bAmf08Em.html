@@ -1,0 +1,269 @@
+<html><head><base href="." /><title>Flappy Adventure</title><style>
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #87CEEB, #1E90FF);
+    font-family: Arial, sans-serif;
+}
+
+#game {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    overflow: hidden;
+    background: #87CEEB;
+    border: 4px solid #2c3e50;
+    border-radius: 10px;
+}
+
+.house {
+    position: absolute;
+    bottom: 0;
+    width: 80px;
+    height: 100px;
+    animation: scrollHouse 8s linear infinite;
+}
+
+@keyframes scrollHouse {
+    from {
+        transform: translateX(400px);
+    }
+    to {
+        transform: translateX(-80px);
+    }
+}
+
+#bird {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    left: 50px;
+    transition: transform 0.2s;
+    z-index: 2;
+}
+
+.pipe {
+    position: absolute;
+    width: 60px;
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+    border: 3px solid #225522;
+    z-index: 1;
+}
+
+#score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    z-index: 3;
+}
+
+#startScreen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 100;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background: #e74c3c;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background: #c0392b;
+}
+</style></head><body>
+<div id="game">
+    <div id="score">0</div>
+    <div id="startScreen">
+        <h1>Flappy Adventure</h1>
+        <p>Press Space or Click to jump</p>
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <svg id="bird" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="18" fill="#f1c40f"/>
+        <circle cx="15" cy="15" r="4" fill="white"/>
+        <circle cx="15" cy="15" r="2" fill="black"/>
+        <path d="M 25 20 Q 30 25 25 30" stroke="orange" stroke-width="3" fill="none"/>
+    </svg>
+    <svg class="house" viewBox="0 0 80 100" style="animation-delay: 0s">
+        <rect x="10" y="40" width="60" height="60" fill="#e74c3c"/>
+        <polygon points="40,10 10,40 70,40" fill="#c0392b"/>
+        <rect x="30" y="70" width="20" height="30" fill="#2c3e50"/>
+        <rect x="20" y="50" width="15" height="15" fill="#3498db"/>
+        <rect x="45" y="50" width="15" height="15" fill="#3498db"/>
+    </svg>
+    <svg class="house" viewBox="0 0 80 100" style="animation-delay: 2s">
+        <rect x="10" y="50" width="50" height="50" fill="#e67e22"/>
+        <polygon points="35,20 10,50 60,50" fill="#d35400"/>
+        <rect x="25" y="75" width="20" height="25" fill="#2c3e50"/>
+        <rect x="20" y="60" width="12" height="12" fill="#3498db"/>
+        <rect x="38" y="60" width="12" height="12" fill="#3498db"/>
+    </svg>
+    <svg class="house" viewBox="0 0 80 100" style="animation-delay: 4s">
+        <rect x="15" y="45" width="55" height="55" fill="#9b59b6"/>
+        <polygon points="42,15 15,45 70,45" fill="#8e44ad"/>
+        <rect x="32" y="72" width="20" height="28" fill="#2c3e50"/>
+        <rect x="25" y="55" width="13" height="13" fill="#3498db"/>
+        <rect x="47" y="55" width="13" height="13" fill="#3498db"/>
+    </svg>
+    <svg class="house" viewBox="0 0 80 100" style="animation-delay: 6s">
+        <rect x="12" y="42" width="58" height="58" fill="#f1c40f"/>
+        <polygon points="41,12 12,42 70,42" fill="#f39c12"/>
+        <rect x="31" y="71" width="20" height="29" fill="#2c3e50"/>
+        <rect x="22" y="52" width="14" height="14" fill="#3498db"/>
+        <rect x="46" y="52" width="14" height="14" fill="#3498db"/>
+    </svg>
+</div>
+
+<script>
+const game = document.getElementById('game');
+const bird = document.getElementById('bird');
+const scoreElement = document.getElementById('score');
+const startScreen = document.getElementById('startScreen');
+
+let birdY = 300;
+let velocity = 0;
+let gravity = 0.6;
+let jump = -10;
+let score = 0;
+let pipes = [];
+let gameLoop;
+let gameStarted = false;
+
+function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+    startScreen.style.display = 'none';
+    birdY = 300;
+    velocity = 0;
+    score = 0;
+    scoreElement.textContent = score;
+    pipes = [];
+    createPipe();
+    gameLoop = setInterval(update, 20);
+}
+
+function createPipe() {
+    const gap = 150;
+    const pipeHeight = Math.random() * (game.clientHeight - gap - 100) + 50;
+    
+    const topPipe = document.createElement('div');
+    topPipe.className = 'pipe';
+    topPipe.style.height = pipeHeight + 'px';
+    topPipe.style.top = '0';
+    topPipe.style.left = game.clientWidth + 'px';
+    
+    const bottomPipe = document.createElement('div');
+    bottomPipe.className = 'pipe';
+    bottomPipe.style.height = (game.clientHeight - pipeHeight - gap) + 'px';
+    bottomPipe.style.bottom = '0';
+    bottomPipe.style.left = game.clientWidth + 'px';
+    
+    game.appendChild(topPipe);
+    game.appendChild(bottomPipe);
+    pipes.push({ top: topPipe, bottom: bottomPipe, passed: false });
+}
+
+function update() {
+    velocity += gravity;
+    birdY += velocity;
+    bird.style.transform = `translateY(${birdY}px) rotate(${velocity * 3}deg)`;
+
+    if (birdY < 0 || birdY > game.clientHeight - 40) {
+        gameOver();
+    }
+
+    pipes.forEach(pipe => {
+        const pipeX = parseInt(pipe.top.style.left);
+        pipe.top.style.left = pipe.bottom.style.left = (pipeX - 2) + 'px';
+
+        if (pipeX < -60) {
+            game.removeChild(pipe.top);
+            game.removeChild(pipe.bottom);
+            pipes.shift();
+        }
+
+        if (pipeX < 50 && !pipe.passed) {
+            pipe.passed = true;
+            score++;
+            scoreElement.textContent = score;
+        }
+
+        if (checkCollision(pipe)) {
+            gameOver();
+        }
+    });
+
+    if (pipes[pipes.length - 1] && parseInt(pipes[pipes.length - 1].top.style.left) < game.clientWidth - 200) {
+        createPipe();
+    }
+}
+
+function checkCollision(pipe) {
+    const birdRect = bird.getBoundingClientRect();
+    const topPipeRect = pipe.top.getBoundingClientRect();
+    const bottomPipeRect = pipe.bottom.getBoundingClientRect();
+
+    return (
+        birdRect.right > topPipeRect.left &&
+        birdRect.left < topPipeRect.right && (
+            birdRect.top < topPipeRect.bottom ||
+            birdRect.bottom > bottomPipeRect.top
+        )
+    );
+}
+
+function gameOver() {
+    clearInterval(gameLoop);
+    gameStarted = false;
+    startScreen.style.display = 'flex';
+    startScreen.querySelector('h1').textContent = 'Game Over! Score: ' + score;
+    pipes.forEach(pipe => {
+        game.removeChild(pipe.top);
+        game.removeChild(pipe.bottom);
+    });
+    pipes = [];
+}
+
+function flap() {
+    if (!gameStarted) return;
+    velocity = jump;
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+        if (!gameStarted) {
+            startGame();
+        } else {
+            flap();
+        }
+    }
+});
+
+game.addEventListener('click', () => {
+    if (!gameStarted) {
+        startGame();
+    } else {
+        flap();
+    }
+});
+</script></body></html>
