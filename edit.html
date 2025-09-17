@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Madam Ji 🎉</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: url('hello.jpg') no-repeat center center;
+    background-size: cover;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+  }
+  button {
+    margin: 10px;
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #ff4081;
+    color: white;
+    transition: 0.3s;
+  }
+  button:hover { background: #e91e63; }
+
+  .hidden { display: none; }
+
+  /* Flowers */
+  .flower {
+    position: absolute;
+    width: 60px;
+  }
+
+  /* Balloons */
+  .balloon {
+    position: absolute;
+    bottom: -150px;
+    width: 60px;
+    animation: float 6s linear infinite;
+  }
+  @keyframes float {
+    from { transform: translateY(0); }
+    to { transform: translateY(-110vh); }
+  }
+
+  /* Hanging sign */
+  .sign {
+    position: absolute;
+    top: 20px;
+    width: 250px;
+    height: 80px;
+    background: #ff4081;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+    animation: swing 2s infinite alternate ease-in-out;
+  }
+  @keyframes swing {
+    0% { transform: rotate(-10deg); }
+    100% { transform: rotate(10deg); }
+  }
+
+  /* Book/message */
+  .book {
+    width: 80%;
+    max-width: 600px;
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+    font-size: 18px;
+    line-height: 1.6;
+    text-align: justify;
+    box-shadow: 5px 5px 20px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+<h1 id="message">Happy Birthday Madam Ji 🎂</h1>
+<p id="question">Do you wanna see something I created for your special day?</p>
+<div id="choices">
+  <button onclick="noChoice()">No</button>
+  <button onclick="yesChoice()">Yes</button>
+</div>
+
+<!-- Crying emoji -->
+<div id="cry" class="hidden">
+  <h2>Look, I am crying 😭😭😭</h2>
+</div>
+
+<!-- Steps -->
+<div id="steps" class="hidden">
+  <button onclick="start()">Let's Start</button>
+</div>
+
+<!-- Background music -->
+<audio id="song" src="music.mp3" loop></audio>
+
+<!-- Cake -->
+<img src="cake.jpg" id="cake" class="hidden" width="200">
+
+<!-- Book/message -->
+<div id="book" class="book hidden">
+Madam Ji, your beautiful ruby eyes sparkle brighter than the stars, and your smile lights up my entire world. Every moment with you feels like magic, and I am endlessly thankful to have you in my life. Your presence makes everything better, and your laughter is the sweetest music to my heart. I dream of our future together, building memories, sharing smiles, and walking hand in hand through every season of life. On this special day, I want you to know how much I love you, how deeply I cherish you, and how constantly I think about the life we will create together. Happy Birthday, Madam Ji! You are my love, my happiness, and my forever. 💖
+</div>
+
+<script>
+function noChoice() {
+  document.getElementById('message').classList.add('hidden');
+  document.getElementById('question').classList.add('hidden');
+  document.getElementById('choices').classList.add('hidden');
+  document.getElementById('cry').classList.remove('hidden');
+}
+
+function yesChoice() {
+  document.getElementById('message').classList.add('hidden');
+  document.getElementById('question').classList.add('hidden');
+  document.getElementById('choices').classList.add('hidden');
+  document.getElementById('steps').classList.remove('hidden');
+}
+
+function start() {
+  document.getElementById('steps').innerHTML = '<button onclick="playMusic()">Add Music 🎵</button>';
+}
+
+function playMusic() {
+  document.getElementById('song').play();
+  document.getElementById('steps').innerHTML = '<button onclick="decorate()">Let\'s Decorate 🌸</button>';
+}
+
+function decorate() {
+  // Keep original background
+  document.body.style.background = 'pink';
+
+  // Hanging sign
+  const sign = document.createElement('div');
+  sign.className = 'sign';
+  sign.innerText = '🎉 Happy Birthday 🎉';
+  document.body.appendChild(sign);
+
+  // Flower images
+  const flowerImages = ['flower1.jpg','flower2.jpg','flower3.jpg'];
+
+  // Corners and sides (excluding top area)
+  for(let i=0;i<8;i++){
+    // Left side
+    const fLeft = document.createElement('img');
+    fLeft.src = flowerImages[i%3];
+    fLeft.className = 'flower';
+    fLeft.style.left='0';
+    fLeft.style.top=(i*12 + 15)+'%'; // start below top
+    document.body.appendChild(fLeft);
+
+    // Right side
+    const fRight = document.createElement('img');
+    fRight.src = flowerImages[i%3];
+    fRight.className = 'flower';
+    fRight.style.right='0';
+    fRight.style.top=(i*12 + 15)+'%'; // start below top
+    document.body.appendChild(fRight);
+
+    // Bottom
+    const fBottom = document.createElement('img');
+    fBottom.src = flowerImages[i%3];
+    fBottom.className = 'flower';
+    fBottom.style.bottom='0';
+    fBottom.style.left=(i*12)+'%';
+    document.body.appendChild(fBottom);
+  }
+
+  document.getElementById('steps').innerHTML = '<button onclick="balloons()">Let\'s Fly Balloons 🎈</button>';
+}
+
+function balloons() {
+  for (let i=0;i<10;i++) {
+    let b = document.createElement('img');
+    b.src = 'balloon.jpg';
+    b.className = 'balloon';
+    b.style.left = Math.random()*90 + 'vw';
+    b.style.animationDuration = (4 + Math.random()*3) + 's';
+    document.body.appendChild(b);
+  }
+  document.getElementById('steps').innerHTML = '<button onclick="cakeFunc()">Let\'s Cut the Cake 🎂</button>';
+}
+
+function cakeFunc() {
+  document.getElementById('cake').classList.remove('hidden');
+  document.getElementById('steps').innerHTML = '<button onclick="finalMessage()">Final Surprise 📖</button>';
+}
+
+function finalMessage() {
+  document.getElementById('cake').classList.add('hidden');
+  document.getElementById('book').classList.remove('hidden');
+  document.getElementById('steps').classList.add('hidden');
+}
+</script>
+</body>
+</html>
