@@ -97,9 +97,7 @@
 </div>
 
 <!-- Crying emoji -->
-<div id="cry" class="hidden">
-  <h2>Look, I am crying 😭😭😭</h2>
-</div>
+<div id="cry" class="hidden"></div>
 
 <!-- Steps -->
 <div id="steps" class="hidden">
@@ -126,7 +124,45 @@ function noChoice() {
   document.getElementById('message').classList.add('hidden');
   document.getElementById('question').classList.add('hidden');
   document.getElementById('choices').classList.add('hidden');
-  document.getElementById('cry').classList.remove('hidden');
+  
+  const cryDiv = document.getElementById('cry');
+  cryDiv.classList.remove('hidden');
+  cryDiv.innerHTML = '<h2>Look, I am crying 😭😭😭</h2>';
+
+  // Only one button: "I don't care"
+  const btnDontCare = document.createElement('button');
+  btnDontCare.innerText = "I don't care";
+  btnDontCare.style.margin = "10px";
+
+  btnDontCare.onclick = function() {
+    // Clear crying message and previous button
+    cryDiv.innerHTML = '';
+
+    // Make full-screen button
+    btnDontCare.style.position = 'fixed';
+    btnDontCare.style.top = 0;
+    btnDontCare.style.left = 0;
+    btnDontCare.style.width = '100vw';
+    btnDontCare.style.height = '100vh';
+    btnDontCare.style.fontSize = '36px';
+    btnDontCare.style.background = '#ff4081';
+    btnDontCare.style.color = 'white';
+    btnDontCare.style.border = 'none';
+    btnDontCare.style.borderRadius = '0';
+    btnDontCare.style.cursor = 'pointer';
+    btnDontCare.style.zIndex = '9999';
+    btnDontCare.innerText = "I am kidding, i was going to click yes";
+
+    document.body.appendChild(btnDontCare);
+
+    btnDontCare.onclick = function() {
+      btnDontCare.remove();          // remove full-screen button
+      cryDiv.classList.add('hidden'); // hide crying div
+      yesChoice();                   // start normal Yes flow
+    };
+  };
+
+  cryDiv.appendChild(btnDontCare);
 }
 
 function yesChoice() {
@@ -196,7 +232,7 @@ function cakeFunc() {
   document.getElementById('steps').innerHTML = '<button onclick="finalMessage()">Final Surprise 📖</button>';
 }
 
-// ------------------- 3-PAGE BOOK FUNCTIONS -------------------
+// ------------------- 3-PAGE BOOK -------------------
 const pages = [
   `Madam Ji, your beautiful ruby eyes sparkle brighter than the stars, and your smile lights up my entire world.`,
   `Every moment with you feels like magic, and I am endlessly thankful to have you in my life. Your presence makes everything better, and your laughter is the sweetest music to my heart.`,
@@ -208,7 +244,6 @@ let currentPage = 0;
 function updatePage() {
   const content = document.getElementById('pageContent');
   content.innerHTML = pages[currentPage];
-
   document.getElementById('prevBtn').style.display = currentPage === 0 ? 'none' : 'inline-block';
   document.getElementById('nextBtn').style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
 }
