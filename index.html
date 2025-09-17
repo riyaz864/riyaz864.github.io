@@ -32,14 +32,10 @@
     transition: 0.3s;
   }
   button:hover { background: #e91e63; }
-
   .hidden { display: none; }
 
   /* Flowers */
-  .flower {
-    position: absolute;
-    width: 60px;
-  }
+  .flower { position: absolute; width: 60px; }
 
   /* Balloons */
   .balloon {
@@ -89,6 +85,7 @@
     text-align: justify;
     box-shadow: 5px 5px 20px rgba(0,0,0,0.3);
   }
+  .page-buttons { margin-top: 15px; }
 </style>
 </head>
 <body>
@@ -117,7 +114,11 @@
 
 <!-- Book/message -->
 <div id="book" class="book hidden">
-Madam Ji, your beautiful ruby eyes sparkle brighter than the stars, and your smile lights up my entire world. Every moment with you feels like magic, and I am endlessly thankful to have you in my life. Your presence makes everything better, and your laughter is the sweetest music to my heart. I dream of our future together, building memories, sharing smiles, and walking hand in hand through every season of life. On this special day, I want you to know how much I love you, how deeply I cherish you, and how constantly I think about the life we will create together. Happy Birthday, Madam Ji! You are my love, my happiness, and my forever. 💖
+  <div id="pageContent"></div>
+  <div class="page-buttons">
+    <button id="prevBtn" onclick="prevPage()">Previous</button>
+    <button id="nextBtn" onclick="nextPage()">Next</button>
+  </div>
 </div>
 
 <script>
@@ -145,37 +146,28 @@ function playMusic() {
 }
 
 function decorate() {
-  // Keep original background
   document.body.style.background = 'pink';
-
-  // Hanging sign
   const sign = document.createElement('div');
   sign.className = 'sign';
   sign.innerText = '🎉 Happy Birthday 🎉';
   document.body.appendChild(sign);
 
-  // Flower images
   const flowerImages = ['flower1.jpg','flower2.jpg','flower3.jpg'];
-
-  // Corners and sides (excluding top area)
   for(let i=0;i<8;i++){
-    // Left side
     const fLeft = document.createElement('img');
     fLeft.src = flowerImages[i%3];
     fLeft.className = 'flower';
     fLeft.style.left='0';
-    fLeft.style.top=(i*12 + 15)+'%'; // start below top
+    fLeft.style.top=(i*12 + 15)+'%';
     document.body.appendChild(fLeft);
 
-    // Right side
     const fRight = document.createElement('img');
     fRight.src = flowerImages[i%3];
     fRight.className = 'flower';
     fRight.style.right='0';
-    fRight.style.top=(i*12 + 15)+'%'; // start below top
+    fRight.style.top=(i*12 + 15)+'%';
     document.body.appendChild(fRight);
 
-    // Bottom
     const fBottom = document.createElement('img');
     fBottom.src = flowerImages[i%3];
     fBottom.className = 'flower';
@@ -204,10 +196,43 @@ function cakeFunc() {
   document.getElementById('steps').innerHTML = '<button onclick="finalMessage()">Final Surprise 📖</button>';
 }
 
+// ------------------- 3-PAGE BOOK FUNCTIONS -------------------
+const pages = [
+  `Madam Ji, your beautiful ruby eyes sparkle brighter than the stars, and your smile lights up my entire world.`,
+  `Every moment with you feels like magic, and I am endlessly thankful to have you in my life. Your presence makes everything better, and your laughter is the sweetest music to my heart.`,
+  `I dream of our future together, building memories, sharing smiles, and walking hand in hand through every season of life. On this special day, I want you to know how much I love you, how deeply I cherish you, and how constantly I think about the life we will create together. Happy Birthday, Madam Ji! 💖`
+];
+
+let currentPage = 0;
+
+function updatePage() {
+  const content = document.getElementById('pageContent');
+  content.innerHTML = pages[currentPage];
+
+  document.getElementById('prevBtn').style.display = currentPage === 0 ? 'none' : 'inline-block';
+  document.getElementById('nextBtn').style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
+}
+
+function nextPage() {
+  if (currentPage < pages.length - 1) {
+    currentPage++;
+    updatePage();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 0) {
+    currentPage--;
+    updatePage();
+  }
+}
+
 function finalMessage() {
   document.getElementById('cake').classList.add('hidden');
   document.getElementById('book').classList.remove('hidden');
   document.getElementById('steps').classList.add('hidden');
+  currentPage = 0;
+  updatePage();
 }
 </script>
 </body>
